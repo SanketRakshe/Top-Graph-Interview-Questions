@@ -1,0 +1,79 @@
+Problem Link:  https://leetcode.com/problems/rotting-oranges/
+
+Code:
+
+class Solution {
+public:
+    int orangesRotting(vector<vector<int>>& grid) {
+        //Figure out the grid size
+        int n = grid.size();
+        int m = grid[0].size();
+        int vis[n][m];
+        //store {{row, col}, timer}
+        queue<pair<pair<int,int>, int>> q;
+
+        int cntfresh = 0;
+        for(int i =0; i<n; i++) {
+            for(int j = 0; j<m; j++) {
+                //if cell contains rotten oranges
+                if(grid[i][j] == 2) {
+                    q.push({{i, j}, 0});
+                    vis[i][j] = 2;
+                }//if not rotten
+                else {
+                    vis[i][j] = 0;
+                }
+                //count fresh oranges
+                if(grid[i][j] == 1) {
+                    cntfresh++;
+                }
+            }
+        }
+
+        int tm = 0;
+        //deltarow deltacol for directions
+        int delrow[] = {-1, 0, 1, 0};
+        int delcol[] = {0, 1, 0, -1};
+        int cnt = 0;
+        //bfs traversal until queue will beempty
+
+        while(!q.empty()) {
+            //neighbourer row and col
+            int row = q.front().first.first;
+            int col = q.front().first.second;
+            int t = q.front().second;
+            tm = max(tm, t);
+
+            q.pop();
+
+            //exactly 4 neighbourers
+            for(int i=0; i<4; i++) {
+                int nrow = row + delrow[i];
+                int ncol = col + delcol[i];
+                //check for the valised cell
+                //then for unvisited fresh orranges
+                if(nrow>=0 && nrow<n && ncol >=0 && ncol<m &&
+                vis[nrow][ncol] == 0 && grid[nrow][ncol] == 1) {
+                    //push in queue with timer increased
+                    vis[nrow][ncol] = 2;
+                    q.push({{nrow, ncol}, t + 1});
+                    cnt++;
+                } 
+            }
+        }
+        //if all oranges are rotton
+        if(cnt != cntfresh) {
+            return -1;
+        }
+
+        return tm;
+    }    
+};
+
+Time Complexity: O ( n x n ) x 4    
+
+Reason: Worst-case – We will be making each fresh orange rotten in the grid and for each rotten orange will check in 4 directions
+
+Space Complexity: O ( n x n )
+
+Reason: worst-case –  If all oranges are Rotten, we will end up pushing all rotten oranges into the Queue data structure
