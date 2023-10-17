@@ -1,0 +1,44 @@
+Problem Link: https://leetcode.com/problems/flood-fill/description/
+
+Code:
+
+class Solution {
+private:
+    void dfs(int row, int col, vector<vector<int>> &image, vector<vector<int>> &ans, int delrow[], int delcol[], int iniColor, int color) {
+        ans[row][col] = color;
+
+        int n = image.size();
+        int m = image[0].size();
+
+        for(int i = 0; i < 4; i++) {
+            int nrow = row + delrow[i];
+            int ncol = col + delcol[i];
+
+            if(nrow >= 0 && nrow < n && ncol >= 0 && ncol < m && image[nrow][ncol] == iniColor && ans[nrow][ncol] != color) {
+                dfs(nrow, ncol, image, ans, delrow, delcol, iniColor, color);
+            }
+        }
+    }
+public:
+    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
+        vector<vector<int>> ans = image;
+
+        int iniColor = image[sr][sc];
+
+        int delrow[] = {-1, 0, 1, 0};
+        int delcol[] = {0, 1, 0, -1};
+
+        dfs(sr, sc, image, ans, delrow, delcol, iniColor, color);
+
+        return ans;
+    }
+};
+
+
+TC = O(NxM + NxMx4) ~ O(N x M)
+For the worst case, all of the pixels will have the same colour, 
+so DFS function will be called for (N x M) nodes and for every node we are traversing for 4 neighbours, 
+so it will take O(N x M x 4) time.
+
+SC = O(N x M) + O(N x M)
+O(N x M) for copied input array and recursive stack space takes up N x M locations at max.
