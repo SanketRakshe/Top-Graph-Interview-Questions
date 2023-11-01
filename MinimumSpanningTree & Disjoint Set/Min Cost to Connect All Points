@@ -1,0 +1,58 @@
+Problem Link: https://leetcode.com/problems/min-cost-to-connect-all-points/description/
+
+Code:
+class Solution {
+public:
+    int primsAlgo(vector<vector<pair<int, int>>>& adj, int n) {
+        priority_queue<pair<int, int>,
+        vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+        vector<int> vis(n, 0);
+
+        pq.push({0, 0});
+        
+        int sum = 0;
+
+        while(!pq.empty()) {
+            auto it = pq.top();
+            pq.pop();
+            int node = it.second;
+            int dist = it.first;
+
+            if(vis[node]==1) continue;
+
+            vis[node] = 1;
+            sum += dist;
+
+            for(auto it: adj[node]) {
+                int adjNode = it.first;
+                int edwt = it.second;
+
+                if(!vis[adjNode]) {
+                    pq.push({edwt, adjNode});
+                }
+            }
+        }
+        return sum;
+    }
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int n = points.size();
+        vector<vector<pair<int, int>>> adj(n);
+        
+        for(int i=0; i<n; i++) {
+            for(int j=i+1; j<n; j++) {
+                int x1 = points[i][0];
+                int y1 = points[i][1];
+
+                int x2 = points[j][0];
+                int y2 = points[j][1];
+
+                int d = abs(x1-x2) + abs(y1-y2);
+
+                adj[i].push_back({j, d});
+                adj[j].push_back({i, d});
+            }
+        }
+        return primsAlgo(adj, n);
+    }
+};
