@@ -1,0 +1,53 @@
+Problem Link: https://leetcode.com/problems/network-delay-time/description/
+
+code:
+
+class Solution {
+public:
+    int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+        //make a adjecency list
+        vector<vector<pair<int, int>>> adj(n+1);
+
+        for(auto it: times) {
+            int u = it[0];
+            int v = it[1];
+            int w = it[2];
+
+            adj[u].push_back({v, w});
+        }
+
+        priority_queue<pair<int, int>,
+        vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+        vector<int> dist(n+1, INT_MAX);
+
+        dist[k] = 0;
+        //{dist, node}
+        pq.push({0, k});
+
+        while(!pq.empty()) {
+            auto it = pq.top();
+            pq.pop();
+            int node = it.second;
+            int wt = it.first;
+
+            for(auto it: adj[node]) {
+                int adjNode = it.first;
+                int edwt = it.second;
+
+                if(wt + edwt < dist[adjNode]) {
+                    dist[adjNode] = wt + edwt;
+
+                    pq.push({wt + edwt, adjNode});
+                }
+            }
+        }
+        
+        int ans = INT_MIN;
+
+        for(int i=1; i<=n; i++) {
+            ans = max(ans, dist[i]);
+        }
+        return ans == INT_MAX ? -1 : ans;
+    }
+};
